@@ -4,6 +4,9 @@ import type { User } from '@/types/auth';
 export const authService = {
   async login(email: string, password: string): Promise<User> {
     const supabase = createClient();
+    if (!supabase) {
+      throw new Error('Supabase is not configured. Please check your environment variables.');
+    }
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     if (!data.user) throw new Error('Login failed');
@@ -16,6 +19,9 @@ export const authService = {
 
   async signup(email: string, password: string, name?: string): Promise<User> {
     const supabase = createClient();
+    if (!supabase) {
+      throw new Error('Supabase is not configured. Please check your environment variables.');
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -35,12 +41,18 @@ export const authService = {
 
   async logout() {
     const supabase = createClient();
+    if (!supabase) {
+      throw new Error('Supabase is not configured. Please check your environment variables.');
+    }
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   },
 
   async getCurrentUser(): Promise<User | null> {
     const supabase = createClient();
+    if (!supabase) {
+      return null;
+    }
     const { data } = await supabase.auth.getUser();
     if (!data.user) return null;
     return {

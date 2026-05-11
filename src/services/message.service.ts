@@ -3,6 +3,7 @@ import type { Message, MessageInput } from '@/types/message';
 
 async function ensureUserRow(user: { id: string; email?: string | null; user_metadata?: { name?: string } }) {
   const supabase = createClient();
+  if (!supabase) return; // Skip if client not available
 
   const { error } = await supabase
     .from('users')
@@ -21,6 +22,7 @@ async function ensureUserRow(user: { id: string; email?: string | null; user_met
 export const messageService = {
   async getMessages(contactId?: string): Promise<Message[]> {
     const supabase = createClient();
+    if (!supabase) return [];
     const { data } = await supabase.auth.getUser();
     if (!data.user) return [];
 
@@ -42,6 +44,7 @@ export const messageService = {
 
   async sendMessage(input: MessageInput): Promise<Message> {
     const supabase = createClient();
+    if (!supabase) throw new Error('Supabase is not configured. Please check your environment variables.');
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw new Error('Not authenticated');
 

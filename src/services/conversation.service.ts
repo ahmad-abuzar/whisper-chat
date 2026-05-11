@@ -4,6 +4,7 @@ import type { User } from '@/types/auth';
 export const conversationService = {
   async getContacts(): Promise<User[]> {
     const supabase = createClient();
+    if (!supabase) return [];
     const { data } = await supabase.auth.getUser();
     if (!data.user) return [];
 

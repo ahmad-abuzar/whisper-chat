@@ -4,6 +4,7 @@ import type { Profile } from '@/types/profile';
 export const profileService = {
   async getProfile(): Promise<Profile | null> {
     const supabase = createClient();
+    if (!supabase) return null;
     const { data } = await supabase.auth.getUser();
     if (!data.user) return null;
 
@@ -28,6 +29,7 @@ export const profileService = {
 
   async updateProfile(input: Partial<Profile>): Promise<Profile> {
     const supabase = createClient();
+    if (!supabase) throw new Error('Supabase is not configured. Please check your environment variables.');
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw new Error('Not authenticated');
 
@@ -68,6 +70,7 @@ export const profileService = {
 
   async deleteProfile(): Promise<void> {
     const supabase = createClient();
+    if (!supabase) throw new Error('Supabase is not configured. Please check your environment variables.');
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw new Error('Not authenticated');
 
