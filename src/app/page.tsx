@@ -10,24 +10,32 @@ import { Button } from '@/components/ui/Button';
 import { LogOut } from 'lucide-react';
 
 export default function HomePage() {
-  const supabase = createClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkSession = async () => {
+      const supabase = createClient();
+      if (!supabase) {
+        // Client creation failed (env vars missing during build)
+        setIsLoading(false);
+        return;
+      }
       const { data } = await supabase.auth.getSession();
       setIsAuthenticated(Boolean(data.session?.user));
       setIsLoading(false);
     };
 
     void checkSession();
-  }, [supabase]);
+  }, []);
 
   const handleAuthSuccess = () => setIsAuthenticated(true);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    const supabase = createClient();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setIsAuthenticated(false);
   };
 

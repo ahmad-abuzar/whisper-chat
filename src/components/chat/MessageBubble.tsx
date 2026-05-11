@@ -6,12 +6,16 @@ import { formatTime } from '@/lib/utils/formatTime';
 import type { Message } from '@/types/message';
 
 export function MessageBubble({ message }: { message: Message }) {
-  const supabase = createClient();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    void supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
-  }, [supabase]);
+    const supabase = createClient();
+    if (!supabase) return;
+
+    void supabase.auth.getUser().then(({ data }: { data: { user?: { id: string } | null } }) => {
+      setCurrentUserId(data.user?.id ?? null);
+    });
+  }, []);
 
   const mine = currentUserId === message.user_id;
 

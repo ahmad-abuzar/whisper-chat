@@ -67,9 +67,14 @@ export const messageService = {
 
   subscribeToMessages(onMessage: (message: Message) => void) {
     const supabase = createClient();
+    if (!supabase) {
+      // Return a no-op channel if client creation failed
+      return { unsubscribe: () => {} } as any;
+    }
+
     const channel = supabase
       .channel('messages-feed')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload: { new: any }) => {
         onMessage(payload.new as Message);
       })
       .subscribe();
